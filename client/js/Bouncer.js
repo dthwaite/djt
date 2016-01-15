@@ -1,0 +1,195 @@
+/**
+ * @file Establishes the Bouncer class into DJT namespace
+ * @author Dominic Thwaites
+ * @see DJT.classes~Bouncer
+ */
+DJT.classes.Bouncer=(/** @lends DJT.classes */ function() {
+    // Utility tangental trigonometrical functions
+    function tan(angle) {
+        return Math.tan(Math.PI*angle/180);
+    }
+    function atan(ratio) {
+        return 180*Math.atan(ratio)/Math.PI;
+    }
+    /**
+     * @param {Object} obj - The UI object that is doing the bouncing
+     * @param {DJT.classes~Bouncer~BouncerParams} params - parameters to affect the environment
+     * @class
+     * @classdesc A Bouncer instance manages one object bouncing within its parent
+     */
+    function Bouncer(obj,params) {
+        /**
+         * Stop or Starts animation
+         * @param {string} command  'stop' or 'go'. Anything else toggles the state
+         */
+        this.stopgo=function(command) {
+            switch (command) {
+                case "stop":
+                    params.paused=true;
+                    break;
+                case "go":
+                    params.paused=false;
+                    break;
+                default:
+                    params.paused=!params.paused;
+                    break;
+            }
+            if (params.paused) obj.stop();
+            else animate();
+        };
+
+        /**
+         * Check and, if necessary, change the size of the bouncing object based on the current parent size
+         */
+        this.resize=function() {
+            if (!params.paused) {
+                this.stopgo();
+                setSize();
+                this.stopgo();
+            } else {
+                setSize();
+                checkPosition();
+            }
+        };
+
+        // Set default parameters in place
+        var defaults={
+            sizelimit:0,			// 0=no resizing, otherwise a % value of the total parent area
+            accuracy:100,			// % value of how accurately to bounce
+            speed:50,				// Number of pixels to travel per second
+            width: obj.width(),		// The default width of the object (i.e. the maximum)
+            height: obj.height(),	// The default height of the object (i.e. the maximum)
+            paused: false			// Initial state of the objects - not moving
+        };
+        params=$.extend(defaults,params);
+
+        // Initialise our object by randomly placing it, setting an initial random direction and checking its size
+        var direction=Math.random()*360;
+        setSize();
+        var pos={left:Math.floor(Math.random()*(obj.parent().width()-obj.width())),top:Math.floor(Math.random()*(obj.parent().height()-obj.height()))};
+        obj.css(pos);
+        animate();
+
+        // Sets the size of the object for suitability within its parent
+        function setSize() {
+            // Optionally set the size such that the object fills no more that sizelimit % of the parent
+            if (params.sizelimit>0) {
+                var outerArea=obj.parent().width()*obj.parent().height();
+                var baseArea=params.width*params.height;
+                var idealArea=outerArea*params.sizelimit/100;
+                if (baseArea>idealArea) {
+                    obj.width(params.width*idealArea/baseArea);
+                    obj.height(params.height*idealArea/baseArea);
+                }
+            }
+            // Mandatoraly set the size if the width or height of the object exceeds the parents border - gives 10% margin either side
+            var ratio=1;
+            if (obj.width()>=obj.parent().width()) ratio=Math.min(ratio,0.8*obj.parent().width()/obj.width());
+            if (obj.height()>=obj.parent().height()) ratio=Math.min(ratio,0.8*obj.parent().width()/obj.width());
+            obj.width(obj.width*ratio);
+            obj.height(obj.height*ratio);
+        }
+
+        // Animates the object to travel from it's current position to the next point of contact against its parent's border
+        // This function is repeatedly called after each time the animation is complete
+        function animate() {
+            if (!params.paused) {
+                var change=delta();
+                obj.animate({top:(change.y<0 ? "-=" : "+=")+Math.abs(change.y),left:(change.x<0 ? "-=" : "+=")+Math.abs(change.x)},1000*Math.floor(Math.sqrt(change.x*change.x+change.y*change.y))/params.speed,"linear",animate);
+            }
+        }
+
+        // Randomly adjusts the reflected direction to give a non-accurate reflection
+        function adjustment() {
+            return 90*(100-params.accuracy)*(Math.random()-0.5)/100;
+        }
+
+        // Gets to position of the 4 corners and adjusts if any part is outside the container
+        function checkPosition() {
+            var pos=obj.position();
+            if (pos.left<0) pos.left=0;
+            if (pos.left+obj.width()>obj.parent().width()) pos.left=obj.parent().width()-obj.width();
+            if (pos.top<0) pos.top=0;
+            if (pos.top+obj.height()>obj.parent().height()) pos.top=obj.parent().height()-obj.height();
+            obj.css(pos);
+            pos.right=obj.parent().width()-(pos.left+obj.width());
+            pos.bottom=obj.parent().height()-(pos.top+obj.height());
+            return pos;
+        }
+
+        // Finds the change in x,y co-ordinates of the object based on its current position,
+        // the direction it is due to travel up until its next touch point of its container
+        function delta() {
+            // First check the current position and adjust so that it is with the parent's container
+            var pos=checkPosition();
+
+            var x=0;	// Change in x position
+            var y=0;	// Change in y position
+            var ratio=0;// The ratio of the x,y distances between the an object's corner and the sides of its container
+            var vertex=0;// Varaible used to represent the inner vertex of a triangle when claculating the relative distance
+            var angle=0; // The angle of a line drawn from object's corner to the corresponding corner of its container
+            var side=true;// True if the calculated trajectory  will hit a vertical side before a horizontal side
+            var quadrant=Math.floor(direction/90); // The quadrant where our direction is headed
+
+            switch (quadrant) {
+                case 0:
+                    ratio=pos.right/pos.top;
+                    angle=atan(ratio); // Angle to top right corner
+                    vertex=direction;
+                    side=angle>direction;
+                    if (side) y=-pos.top;
+                    else x=pos.right;
+                    break;
+                case 1:
+                    ratio=pos.bottom/pos.right;
+                    angle=90+atan(ratio); // Angle to bottom right corner
+                    vertex=180-direction;
+                    side=direction>angle;
+                    if (side) y=pos.bottom;
+                    else x=pos.right;
+                    break;
+                case 2:
+                    ratio=pos.left/pos.bottom;
+                    angle=180+atan(ratio); // Angle to bottom left corner
+                    vertex=direction-180;
+                    side=angle>direction;
+                    if (side) y=pos.bottom;
+                    else x=-pos.left;
+                    break;
+                case 3:
+                    ratio=pos.top/pos.left;
+                    angle=270+atan(ratio); // Angle to top left corner
+                    vertex=360-direction;
+                    side=direction>angle;
+                    if (side) y=-pos.top;
+                    else x=-pos.left;
+                    break;
+            }
+            // Set the new direction once we've reached the next edge
+            // and set the opposite length in accordance with the vertex and current direction
+            if (side) {
+                direction=180-direction+adjustment();
+                x=(2*(quadrant%2)-1)*y*tan(vertex);
+            } else {
+                direction=360-direction+adjustment();
+                y=(2*(quadrant%2)-1)*x*tan(90-vertex);
+            }
+            // Make sure the direction which will be next used is adjusted between 0-360 degrees
+            if (direction<0) direction+=360;
+            if (direction>360) direction-=360;
+            return ({x:Math.floor(x),y:Math.floor(y)});
+        }
+    }
+
+    return Bouncer;
+})();
+
+/**
+ * @typedef {Object} DJT.classes~Bouncer~BouncerParams
+ * @property {number} [sizelimit=0] 0 means no resizing, otherwise a % value of the total parent area
+ * @property {number} [accuracy=100] % value of how accurately to bounce
+ * @property {number} [speed=50] Number of pixels to travel per second
+ * @property {number} [width=bouncer.width] The width of the object - the maximum
+ * @property {number} [height=bouncer.height] The  height of the object - the maximum
+ * @property {boolean} [paused=false] Initial paused state of the object
+ */

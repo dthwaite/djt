@@ -1,0 +1,175 @@
+<template name="resume">
+    <div class="clickthrough noselect belowheader">
+        <h3>Summary</h3>
+        <p><strong>20+ years</strong> hands-on development experience in multiple technical environments and languages.
+            Mainly within the banking industry (real time trading and analytics) but more recently
+            involving cloud based applications for a variety of industries.</p>
+        <h4>I Seek to ...</h4>
+        <p>Continue to draw on the deep satisfaction I get from developing well designed, accurate, tested, performant,
+            documented functionality in challenging technical/business environments.</p>
+        <h4>I work for ...</h4>
+        <p><strong>£500+/day</strong> contracting in a <strong>banking</strong> or similarly <strong>challenging</strong> environment.
+            Happy to <strong>remote</strong> in part.</p>
+        <h4>Current Technical Involvement</h4>
+        <ul>
+            <li><mark>JavaScript</mark>, <mark>HTML5</mark>, <mark>CSS3</mark> using <mark>Less</mark>, <mark>Jquery</mark>,
+                <mark>Bootstrap</mark>, <mark>JSON</mark>, <mark>Ajax</mark>, <mark>JSdocs</mark></li>
+            <li><mark>MySQL</mark> - schema design, complex SPs, triggers, updates, queries and indexing</li>
+            <li><mark>NodeJS</mark> using async <mark>SQL</mark>, <mark>SOAP</mark> and <mark>RabbitMQ</mark> libraries</li>
+            <li><mark>PHP</mark> on apache, session management, service callouts, SQL and file system interaction</li>
+            <li><mark>Linux</mark>, <mark>MacOs</mark> operating system familiarity and scripting</li>
+            <li><mark>Eclipse</mark> & <mark>WebStorm</mark> IDE, <mark>SVN</mark> management, <mark>ANT</mark> scripting, external tools</li>
+        </ul>
+        <h4>Recent Technical Experience</h4>
+        <ul>
+            <li>Flex <mark>AS3</mark> presenting extensive client-side functionality</li>
+            <li><mark>RabbitMQ</mark> design and use</li>
+            <li><mark>APEX</mark> on SalesForce and API integration</li>
+            <li>Google Glass integration</li>
+            <li><mark>XSLT</mark> transforming structured search results into hierarchical HTML documents</li>
+        </ul>
+        <h4>Historic Programming/DB Experience</h4>
+        <p><mark>C</mark>, <mark>C++</mark>, <mark>Java</mark>, <mark>Sybase</mark>, <mark>Foxpro</mark>, <mark>AIMS</mark>:
+            I have practiced these extensively in the past and, at the time, would have been considered highly proficient.
+            I am a developer, the language is the tool which, with familiarity, allows me to develop with speed and accuracy.</p>
+        <h4>Technical Opinion</h4>
+        <p>I am very curious. I always seek to understand the technology I use at a deeper level which ensures that I naturally
+            understand the opportunities and limitations. I am fascinated with the broader technical landscape including
+            a) the services provided by the likes of Amazon (<mark>AWS</mark>), Google and others
+            b) the evolvement of <mark>NoSQL</mark> persistence engines like <mark>MongoDB</mark> and
+            c) advanced application building environments such as <mark>Meteor</mark>. I favour roles that involve such things which allows me to expand my hands-on experience.</p>
+    </div>
+    <div class="row enquirybox">
+        <div class="alert alert-success text-center" role="alert">
+            <p>What's with the bouncing logos, by the way?</p>
+            <button type="button" class="btn btn-primary btn-xs center-block">Find out</button>
+        </div>
+    </div>
+    <div class="clickthrough noselect">
+        <h3>Three examples of delivery challenges</h3>
+        <p>These examples target specific, recent and interesting challenges which demonstrate my versatility and analytical approach.
+            I do not have space to review the large scale, team oriented software development projects undertaken at Lehman Brothers, Barclays Capital or Code Vanilla.
+            I have full documentation for the below should these be of any further interest.</p>
+
+        <h4>Remit: To provide a credible <mark>Google Glass</mark> (GG) experience by viewing and interacting with content from Code Vanilla’s (CV) knowledge system.</h4>
+        <p>This required me to:</p>
+        <ul>
+            <li>Analyse the GG design pattern and decide on the optimum mapping between CV’s knowledge and collaboration content and GG content</li>
+            <li>Understand and implement Google’s sophisticated authentication and authorisation model to allow a user to seamlessly move between CV’s cloud environment and GG</li>
+            <li>Understand and implement Google’s API for two way messaging between CV’s application and GG</li>
+            <li>Implement full functionality in PHP to transfer content and to broker messaging such that both GG and CV’s web application reacted simultaneously in real time.</li>
+        </ul>
+        <h4>Remit: To allow for the entry, review and synchronisation of overlapping structured customer data held in 3 completely different repositories</h4>
+            <p>The systems involved were <mark>SalesForce</mark>, a Music Catalogue system and an external accounting system requiring me to:</p>
+        <ul>
+            <li>Design a system of asynchronous communication between all 3 systems
+                - I used the <mark>RabbitMQ</mark> queuing infrastructure which protected against end-point unavailability</li>
+            <li>Establish and document a complete mapping of entities and fields</li>
+            <li>Establish a cross referencing system for entity identifiers</li>
+            <li>Design and implement the logic to ensure any CRUD change in one system is reflected in the others
+                while also permitting the ability to switch on or off the mappings</li>
+            <li>Establish a thorough error reporting component to the whole arrangement</li>
+            <li>Put in place monitoring and alert systems to detect system outages or failures</li>
+            <li>Put in place a detailed logging system to aid system performance diagnostics</li>
+            <li>Learn <mark>APEX</mark> and the Salesforce environment to develop the necessary triggers and code</li>
+        </ul>
+        <p>The design actually catered for any number of disparate systems.
+            As is so often the case a more generic solution is the clearer one.
+            It was implemented in NodeJS.</p>
+
+        <h4>Remit: To devise a feature in a Music Catalogue System (MCS) to advise a user of other tracks that sound like the one currently under review.</h4>
+        <p>Tracks in MCS are keyworded so one might conclude that this is simply an exercise in finding the tracks with the most overlapping keywords.
+            For a number of reasons this is not good enough and the solution involved:</p>
+        <ul>
+            <li>The categorisation of keywords and automatically weighting them in significance based on their existing use and context</li>
+            <li>The invention and implementation of a % scoring system for the likeness of one track with another</li>
+            <li>Ensuring a fast response (calculation of like tracks) by maintaining intermediate weighting factors against every track;
+                things change as the catalogue system is maintained (tracks added, keywords changed etc)</li>
+            <li>Developing and optimising the <mark>complex SQL</mark> unions and joins to effect the result</li>
+            <li>Providing an easy to use diagnostic tool for catalogue administrators that explain the score of one track against another so they may adjust keywording if necessary</li>
+        </ul>
+        <p>When tested by music experts they reported that the system was uncanny in its accuracy and insight without the need for any further algorithmic adjustments.</p>
+
+        <h3>Employment summary</h3>
+        <h4>2007-Present, hands on CTO at <strong>Code Vanilla</strong></h4>
+        <p>I am the principal technical partner delivering a number of disparate applications to clients using a <mark>LAMP</mark> stack
+            and involving <mark>PHP</mark>, <mark>AS3</mark>, <mark>JS</mark>, <mark>SQL</mark>. I design, develop, deploy and support our projects
+            as well as actively contributing to functional requirements. Projects include, amongst many other smaller deliverables:</p>
+        <ul>
+            <li>A music catalogue management system and public facing website</li>
+            <li>A custom knowledge management system for the Pharma industry</li>
+            <li>A real-time, visually compelling, advanced collaboration platform</li>
+            <li>A health monitoring app for web, native iPhone and Android</li>
+        </ul>
+        <h4>2003-2007 Credit Trading IT director at <strong>Barclays Capital</strong></h4>
+        <p>Non technical role leading an international team of developers to deliver an integrated, global credit trading system.
+            Key responsibilities were:</p>
+        <ul>
+            <li>To liaise directly with the credit trading business MD on requirements and strategy</li>
+            <li>To provide a full application support service to the global trading business</li>
+            <li>To deliver a new credit trading system that:</li>
+            <ul>
+                <li>Accepted direct trade entry from traders</li>
+                <li>Interfaced with various ECNs</li>
+                <li>Provided real time position & risk management to traders and management</li>
+                <li>Interfaced with back office settlement systems</li>
+                <li>Interfaced with various corporate services such as pricing and product data</li>
+            </ul>
+        </ul>
+        <h4>1991-2003 Front office trading developer and project manager at <strong>Lehman Brothers</strong></h4>
+        <p><mark>C++</mark> development on Unix (initially <mark>Foxpro</mark> on PC) with <mark>Sybase</mark> backend delivering a trading and risk management system
+            to the government trading desk. I was steadily promoted within the firm to more senior project management roles
+            expanding my responsibilities to build out the London based trading system internationally.
+            I consequently spent 2 years in the New York office delivering to the credit trading desk.</p>
+        <h4>Ancient history</h4>
+        <p>Prior to Lehman I held a number of positions all involving programming. These included working for:</p>
+        <ul>
+            <li><strong>Arbat Ltd</strong> using their proprietary language AIMS to manage back office banking</li>
+            <li><strong>Lloyds bank</strong> (in New York) who used Arbat’s banking system</li>
+            <li><strong>Amro bank</strong> who used Arbat’s banking system</li>
+            <li><strong>ODT Ltd</strong> A partnership developing an equity valuation system written in C delivered on PC</li>
+            <li><strong>Tellus Ltd</strong> Various consultancies using DBASE III</li>
+        </ul>
+        <p>I was educated in England to A level standard and started programming in <mark>BASIC</mark> at the age of 15 and moved swiftly on to <mark>8080 assembly language</mark>.
+            I spent one year at Imperial College of London University studying Computer Science.
+            I didn’t see the point and left to get a programming job. So no degree, I’m afraid.</p>
+        <h3>Postscript</h3>
+        <p>I am a very experienced developer/architect with 15 years financial experience and 10 years project and team management.
+            I know what makes a development manager happy because I’ve been one.
+            Naturally, I communicate well and am friendly and effective in a team environment.</p>
+    </div>
+    <div id="disqus" class="seethrough well well-lg">
+        <div id="disqus_thread"></div>
+    </div>
+    <div class="overlay">
+        <div class="row col-xs-offset-1 col-xs-10">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h4 class="col-xs-11">Bouncing Logos</h4>
+                        <button id="quit-overlay" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <p>First of all, they are the companies I have worked for.</p>
+                    <p>I thought it would be fun to have them bouncing around the confines of the window which required a few minor
+                    challenges. Notice how they bounce inside the window and are not subject to any scrolling. I made a class
+                    to bounce an object within its parent and added a few features like:</p>
+                    <ul>
+                        <li>The images size down automatically to ensure they do not take more than a given % of the window area</li>
+                        <li>The images can bounce off the walls with a given degree of inaccuracy - thus the bounces can be randomly
+                        inaccurate to ensure they do not get into a regular (and boring) transit</li>
+                        <li>If you click in the window it stops/starts the animation</li>
+                        <li>Their speed can be set to any number of pixels per second (50 here)</li>
+                    </ul>
+                    <p>It took me a while to work out the right bouncing angle based on
+                    what wall the image first hit at what angle of approach (back to high school trigonometry)</p>
+                    <p>This little feature is a good example of one where you'd expect to find some library on the web to do.
+                    I couldn't find anything that really matched my need/circumstance. Besides, you find so many code snippets/classes
+                    people have written and publish which are, I'm afraid, woefully lacking in quality. Pick a duffer and you'll spend
+                    more time trying to make it work than writing your own.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

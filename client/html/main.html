@@ -1,0 +1,92 @@
+<!--suppress ALL -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Site to describe my work and my interests">
+    <meta name="author" content="Dominic Thwaites">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+    <title>Dominic Thwaites</title>
+</head>
+
+<body>
+
+
+</body>
+
+<template name="hello">
+    <button>Click Me</button>
+    <p>You've pressed the button {{counter}} times.</p>
+</template>
+
+<template name="urls">{{me}}</template>
+
+<template name="code"><p class="noselect">{{js}}</p></template>
+
+<template name="bouncing_logos">
+    <div id="logo_mat">
+        <img class="wanderer" src="/images/lehman_logo.png"/>
+        <img class="wanderer" src="/images/barclays_logo.png"/>
+        <img class="wanderer" src="/images/cv_logo.png"/>
+        <img class="wanderer" src="/images/amro_logo.png"/>
+        <img class="wanderer" src="/images/lloyds_logo.png"/>
+    </div>
+</template>
+
+<template name="home">
+    <div class="jumbotron">
+        <h1>Hi,</h1>
+        <p>I'm a regular guy who builds computer software for a living</p>
+        <p>I'm married with 3 kids and I live in Buckinghamshire, England</p>
+        <p>You can get an idea of who I am by looking at my interests and my resume</p>
+        <p>I use this site as a little showcase and test bed for exploring web development technologies of interest</p>
+    </div>
+</template>
+
+<template name="ApplicationLayout">
+    <div id="code-background">
+        {{> yield "background"}}
+    </div>
+    <div class="container">
+        <!-- Static navbar -->
+        <nav class="navbar navbar-fixed-top navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <p class="navbar-brand">[dominic.thwaites]</p>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="about">About</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Interests<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="evolution">Evolution</a></li>
+                                <li><a href="physics">Physics</a></li>
+                                <li><a href="squash">Squash</a></li>
+                                <li><a href="sailing">Sailing</a></li>
+                                <li><a href="goinggreen">Going Green</a></li>
+                                <li><a href="diet">Diet</a></li>
+                                <li><a href="programming">Programming</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="resume">Resume</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {{> yield}}
+
+    </div>
+
+</template>

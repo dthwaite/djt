@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: public/Life.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: public/Life.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Life game management and calculation
+ * @author Dominic Thwaites
+ * @see global~Life
+ */
+
+/**
+ *
+ * The game of Life is implemented with a small number of classes registered in {@link DJT.classes}
+ *
+ * @description
+ * The general architecture looks like this:
+ * ![Architecture diagram](Life.jpg "Architecture diagram")
+ *
+ * The [Life]{@link DJT.classes~Life} class is the core engine that models the game, allows for cells
+ * to be set and unset and, crucially, to iterate into the next generation. Iteration is a fairly
+ * compute intensive task and is thus best performed in a compute thread outside the UI. In this
+ * example, the [Life]{@link DJT.classes~Life} class is used both on the server and in a browser
+ * worker thread.
+ *
+ * Drawing the game of Life is relatively simple and is achieved with the [LifeUI]{@link DJT.classes~LifeUI} class.
+ * This class principally relies on being supplied with cell changes and drawing those changes on an HTML canvas.
+ * The [LifeUI]{@link DJT.classes~LifeUI} class is instantiated with an IO class that implements the required
+ * comms to the Life engine - which may exist in a worker thread or on the server.
+ *
+ * Thus there are two IO classes that implement a common interface ([LifeIO]{@link LifeIO}). These are:
+ * + [ServerIO]{@link DJT.classes~ServerIO} which mediates comms to the server
+ * + [WorkerIO]{@link DJT.classes~WorkerIO} which mediates comms to a web worker
+ *
+ * An additional feature of the server implementation is that the game and its history is persisted
+ * so that it may be recalled and displayed at any time. The features to achieve persistence are implemented
+ * with [PersistedLife]{@link DJT.classes~PersistedLife}, a subclass of [Life]{@link DJT.classes~Life}.
+ *
+ * The server responds to messages from the Client to manage what Lives are persisted, iterated and communicated.
+ * These are message broking functions which are encapsulated in the [ServerLives]{@link DJT.classes~ServerLives}
+ * class which is a *static* class. In the same way the client-side worker thread receives and processes messages
+ * as per the {@link WorkerThread} namespace.
+ *
+ * Finally, [LifePatterns]{@link DJT.classes~LifePatterns} is a static class that supplies Life shapes and which
+ * is used extensively by the test scripts
+ *
+ *
+ * @module Life
+ * @author Dominic Thwaites
+ * @see DJT.classes~Life
+ * @see DJT.classes~LifePatterns
+ * @see DJT.classes~LifeUI
+ * @see LifeIO
+ * @see DJT.classes~ServerIO
+ * @see DJT.classes~WorkerIO
+ * @see DJT.classes~PersistedLife
+ * @see DJT.classes~ServerLives
+ * @see WorkerThread
+ *
+ */
+DJT.classes.Life=(/** @lends DJT.classes */function()  {
+    // Allows the storage of data private to each instance
+    var data={};
+    var uid=0;
+
+    /**
+     * Create a new Life game
+     *
+     * @param {number} width The width (X coordinate) of the Life game
+     * @param {number} height The height (Y coordinate) of the Life game
+     * @class
+     */
+    var Life=function(width,height) {
+        data[this.id=uid++]={grid:[],pass:0};
+        this.resize(width,height);
+    };
+
+    // Returns the 2-element array that represents one cell
+    function rawcell(x,y) {
+        var grid=data[this.id].grid;
+        if (y&lt;grid.length &amp;&amp; y>=0) {
+            if (x&lt;grid[y].length &amp;&amp; x>=0) {
+                return grid[y][x];
+            }
+        }
+        return [0,0];
+    }
+
+    // Returns a public facing cell definition and value
+    function newValue(x,y,v) {
+        return {x:x,y:y,v:v};
+    }
+
+    /**
+     * Gets a cell from the Life game
+     *
+     * @param {number} x The X coordinate
+     * @param {number} y The Y coordinate
+     * @return {LifeIO~LifeCell} The cell requested
+     */
+    Life.prototype.cell=function(x,y) {
+        return newValue(x,y,this.value(x,y));
+    };
+
+    /**
+     * Resizes the Life grid to the width and height provided
+     *
+     * If the change is a reduction then any cells to the right or bottom of the grid are removed
+     * whether they are alive or not
+     *
+     * @param {number} width The new grid width
+     * @param {number} height The new grid height
+     */
+    Life.prototype.resize=function(width,height) {
+        var grid=data[this.id].grid;
+        var i;
+        // Make sure we have the right number of rows
+        if (grid.length>height) grid.splice(height,grid.length-height);
+        else for (i=grid.length;i&lt;height;i++) grid.push([]);
+
+        // Make sure that each row is of the right length
+        for (i=0;i&lt;grid.length;i++) {
+            if (grid[i].length>width) grid[i].splice(width,grid[i].length-width);
+            else {
+                var additions=width-grid[i].length;
+                for (var j=0;j&lt;additions;j++) grid[i].push([0,0]);
+            }
+        }
+        return this.values();
+    };
+
+    /**
+     * Gets the dimensions of the Life game
+     *
+     * @return {LifeIO~LifeSize} The Life dimensions
+     */
+    Life.prototype.getDimensions=function() {
+        var grid=data[this.id].grid;
+        return {width:grid[0].length,height:grid.length};
+    };
+
+    /**
+     * Executes one iteration of Life
+     *
+     * @returns {LifeIO~LifeCell[]} The set of cells that were changed
+     */
+    Life.prototype.iterate=function() {
+        var grid=data[this.id].grid;
+        var pass=data[this.id].pass;
+        var newpass=(pass==0 ? 1 : 0);
+        var changes=[];
+
+        for (var h=0;h&lt;grid.length;h++) {
+            for (var w=0;w&lt;grid[h].length;w++) {
+                // for each cell we add up the total number of occupied neighbours...
+                var total=0;
+                // The row above us
+                if (h>0) {
+                    if (w>0) total+=grid[h-1][w-1][pass];
+                    total+=grid[h-1][w][pass];
+                    if (w&lt;grid[h-1].length-1) total+=grid[h-1][w+1][pass];
+                }
+                // The row alongside us
+                if (w>0) total+=grid[h][w-1][pass];
+                if (w&lt;grid[h].length-1) total+=grid[h][w+1][pass];
+
+                // The row below us
+                if (h&lt;grid.length-1) {
+                    if (w>0) total+=grid[h+1][w-1][pass];
+                    total+=grid[h+1][w][pass];
+                    if (w&lt;grid[h+1].length-1) total+=grid[h+1][w+1][pass];
+                }
+
+                // Set the new value to alive if we've got 2 or 3 neighbours
+                if (grid[h][w][pass]==0) {
+                    if (total==3){
+                        grid[h][w][newpass]=1;
+                        changes.push(newValue(w,h,true));
+                    } else grid[h][w][newpass]=0;
+                } else {
+                    if (total&lt;2 || total>3) {
+                        grid[h][w][newpass]=0;
+                        changes.push(newValue(w,h,false));
+                    } else grid[h][w][newpass]=1;
+                }
+            }
+        }
+        data[this.id].pass=newpass;
+        this.persist(changes);
+        return changes;
+    };
+
+    /**
+     * Applies cell changes into the grid
+     *
+     * Note that this method returns the set of cells that were *actually* changed. Any cells
+     * given that were already of the same state are not included.
+     *
+     * @param {LifeIO~LifeCell[]} cells
+     * @return {LifeIO~LifeCell[]} The set of cells that were changed
+     */
+    Life.prototype.apply=function(cells) {
+        var changes=[];
+        for (var index in cells) {
+            var cell = cells[index];
+            if (cell.v!=this.value(cell.x,cell.y)) {
+                this.toggle(cell.x, cell.y);
+                changes.push(cell);
+            }
+        };
+        this.persist(changes);
+        return changes;
+    };
+
+    /**
+     * Persists changes
+     *
+     * @abstract
+     * @param {LifeIO~LifeCell[]} changes The changes to be persisted
+     */
+    Life.prototype.persist=function(changes) {
+        // No action in the base form of this class
+    };
+
+    /**
+     * Sets a grid cell to the LIVE state
+     *
+     * @param {number} x The X coordinate
+     * @param {number} y The Y coordinate
+     */
+    Life.prototype.live=function(x,y) {
+        rawcell.call(this,x,y)[data[this.id].pass]=1;
+    };
+
+    /**
+     * Sets a grid cell to the DEAD state
+     *
+     * @param {number} x The X coordinate
+     * @param {number} y The Y coordinate
+     */
+    Life.prototype.die=function(x,y) {
+        rawcell.call(this,x,y)[data[this.id].pass]=0;
+    };
+
+    /**
+     * Toggles a grid cell to the opposite state (ALIVE or DEAD)
+     *
+     * @param {number} x The X coordinate
+     * @param {number} y The Y coordinate
+     */
+    Life.prototype.toggle=function(x,y) {
+        rawcell.call(this,x,y)[data[this.id].pass]=this.value(x,y) ? 0 : 1;
+    };
+
+    //
+    /**
+     * Gets the value of a grid cell
+     *
+     * @param {number} x The X coordinate
+     * @param {number} y The Y coordinate
+     * @returns {boolean} True if the cell is ALIVE, false if it is DEAD
+     */
+    Life.prototype.value=function(x,y) {
+        return rawcell.call(this,x,y)[data[this.id].pass]==1;
+    };
+
+    /**
+     * Gets all ALIVE cells
+     *
+     * @returns {LifeIO~LifeCell[]} The set of cells that are alive
+     */
+    Life.prototype.values=function() {
+        var changes=[];
+        var grid=data[this.id].grid;
+        var pass=data[this.id].pass;
+        for (var y=0;y&lt;grid.length;y++) {
+            for (var x=0;x&lt;grid[y].length;x++) {
+                if (grid[y][x][pass]==1) changes.push(newValue(x,y,true));
+            }
+        }
+        return changes;
+    };
+
+    return Life;
+
+})();
+
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Life.html">Life</a></li></ul><h3>Classes</h3><ul><li><a href="DJT.classes-Bouncer.html">Bouncer</a></li><li><a href="DJT.classes-Life.html">Life</a></li><li><a href="DJT.classes-LifePatterns.html">LifePatterns</a></li><li><a href="DJT.classes-LifeUI.html">LifeUI</a></li><li><a href="DJT.classes-PersistedLife.html">PersistedLife</a></li><li><a href="DJT.classes-ServerIO.html">ServerIO</a></li><li><a href="DJT.classes-ServerLives.html">ServerLives</a></li><li><a href="DJT.classes-WorkerIO.html">WorkerIO</a></li></ul><h3>Namespaces</h3><ul><li><a href="DJT.html">DJT</a></li><li><a href="WorkerThread.html">WorkerThread</a></li></ul><h3>Interfaces</h3><ul><li><a href="LifeIO.html">LifeIO</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Jan 15 2016 11:08:26 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
