@@ -1,0 +1,81 @@
+<template name="life"><canvas id="game1" class="life"></canvas></template>
+
+<template name="serverlife">
+    <div class="container">
+        <h3>The game of Life running on the server</h3>
+        <canvas class="life-canvas"></canvas>
+        <p>You can copy and paste the URL for this window into another browser and see these two games play out simultaneously.
+            Click in either one and a new life object will be inserted into the game and both windows will reflect this.
+            <br/><br/>
+            This Life game iterates 4 times a second, each requiring a message from the server containing cell changes from one iteration to the next.
+            Messaging is achieved with <mark>Meteor</mark>'s reactive infrastructure where cell changes are lodged in <mark>MongoDB</mark> on the server
+            and the client subscribes to a live query of those changes.</p>
+        <button type="button" id="view-architecture-button" class="btn btn-primary btn-xs center-block">View an architectural diagram</button>
+        <div id="disqus" class="seethrough well well-lg">
+            <div id="disqus_thread"></div>
+        </div>
+
+        <div class="overlay">
+            <div class="row col-xs-offset-1 col-xs-10">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <h4 class="col-xs-11">Architectural diagram</h4>
+                            <button id="quit-overlay" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <img src="images/Life.svg" onerror="this.src='Life.jpg'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<template name="lifeUnclicked">
+    <div class="row enquirybox">
+        <div class="alert alert-success text-center" role="alert">
+            Have you tried clicking in this window?
+        </div>
+    </div>
+</template>
+
+<template name="lifeClicked">
+    <div class="row enquirybox">
+        <div class="alert alert-success" role="alert">
+            <p class="text-center">Each click deposits a random shape</p>
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#">Blocks <span class="badge">{{shapes "block"}}</span></a></li>
+                <li role="presentation" class="active"><a href="#">Blinkers <span class="badge">{{shapes "blinker"}}</span></a></li>
+                <li role="presentation" class="active"><a href="#">Gliders <span class="badge">{{shapes "glider"}}</span></a></li>
+            </ul>
+            <button type="button" class="btn btn-primary btn-xs center-block">Learn the tech behind this game of Life</button>
+        </div>
+    </div>
+    <div class="overlay">
+        <div class="row col-xs-offset-1 col-xs-10">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h4 class="col-xs-11">How I implemented the Life game</h4>
+                        <button id="quit-overlay" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <p>The background to my evolution page contains a canvas on which the game of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">Life</a> is played out.
+                        I have a <mark>javascript</mark> class that performs all the logic which runs in a <mark>worker thread</mark> in the browser.
+                        The worker thread sends a message to the main UI thread every 100 milliseconds with a list of changed cells which are duly redrawn on the canvas.
+                        While it may not be strictly necessary in this case, it is good practice to put client-side compute intensive calculations into a worker thread
+                        so that the user does not suffer from degraded performance or responsiveness.</p>
+                    <p>Below is a separate life game but with a difference; It runs on the server using the same life class used by the client-side worker thread.
+                        Because this site uses <mark>NodeJS</mark>, I benefit from using a consistent language (<mark>javascript</mark>) on both server and client.
+                        In this case the message containing changed cells comes from the server. This life game is uniquely identified so that you can view the same
+                        game in real-time on a completely different computer (or <a href="/life#{{lifeId}}" target="_blank">new browser window</a>).</p>
+                    <canvas class="life-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

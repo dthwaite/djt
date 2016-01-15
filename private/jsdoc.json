@@ -1,0 +1,30 @@
+{
+  "opts": {
+    "encoding": "utf8",
+    "destination": "private/docs/",
+    "recurse": true
+  },
+  "plugins": [ "plugins/markdown"],
+
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true
+  },
+  "source": {
+    "include": [
+      "client/js/",
+      "server/js/",
+      "public/",
+      "lib/",
+      "js/"
+    ]
+  },
+
+  "templates": {
+    "default": {
+      "staticFiles": {
+        "include": ["private/images/"]
+      }
+    }
+  }
+}
