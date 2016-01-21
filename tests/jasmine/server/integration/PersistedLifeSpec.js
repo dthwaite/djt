@@ -4,23 +4,6 @@ describe("Class: PersistedLife ... Tests the persistence of a Life game",functio
     var subscriptionId1="subid1";
     var subscriptionId2="subid2";
 
-    var async=(function() {
-        function A() {
-            this.callback=null;
-        }
-        A.prototype.trigger=function(param) {
-            if (this.callback) {
-                this.callback(param);
-                this.callback=null;
-            }
-        };
-        A.prototype.done=function(callback) {
-            this.callback=callback;
-        };
-        return new A();
-    })();
-
-
     beforeAll(function() {
         DJT.mongo.games.find().forEach(function(game) {
             DJT.mongo.games.remove(game._id);
@@ -28,20 +11,14 @@ describe("Class: PersistedLife ... Tests the persistence of a Life game",functio
         DJT.mongo.changes.find().forEach(function(change) {
             DJT.mongo.changes.remove(change._id);
         });
+        spyOn(DJT.mongo.games,"insert").and.callThrough();
     });
 
-    beforeEach(function() {
-        var spy=spyOn(DJT.mongo.games,"insert").and.callThrough();
-    });
-
-    it("1. should create a new PersistedLife object",function(done) {
+    it("1. should create a new PersistedLife object",function() {
         var id=DJT.classes.ServerLives.createLife(100,100);
-        Meteor.setTimeout(function() {
-            game1=DJT.classes.ServerLives.getLife(id);
-            expect(game1.serverId).toEqual(id);
-            expect(DJT.mongo.games.insert).toHaveBeenCalled();
-            done();
-        },10);
+        game1=DJT.classes.ServerLives.getLife(id);
+        expect(game1.serverId).toEqual(id);
+        expect(DJT.mongo.games.insert).toHaveBeenCalled();
     });
     it("2. should persist, read and apply a block shape",function() {
         game1.persist(DJT.classes.LifePatterns.getPattern("block"));

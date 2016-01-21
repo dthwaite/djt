@@ -66,7 +66,8 @@ DJT.classes.Life=(/** @lends DJT.classes */function()  {
      * @class
      */
     var Life=function(width,height) {
-        data[this.id=uid++]={grid:[],pass:0};
+        this.id=uid++;
+        data[this.id]={grid:[],pass:0};
         this.resize(width,height);
     };
 

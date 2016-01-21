@@ -1,9 +1,5 @@
 describe("Class: Life", function() {
 
-    // Call in the Life processor as a raw nodeJS file
-    var webroot=process.env["METEOR_SHELL_DIR"].substr(0,process.env["METEOR_SHELL_DIR"].indexOf(".meteor"))+"public/";
-    Npm.require(webroot+"Life.js");
-
     function resetCells(cells) {
         for (var index=0;index<cells.length;index++) {
             cells[index].v=false;
@@ -35,7 +31,7 @@ describe("Class: Life", function() {
         });
 
         it("Check a request to retrieve an array of all set cells", function () {
-            expect(life.values().length, 0, "Grid should return all unset");
+            expect(life.values().length).toEqual(0);
             for (x = 0; x < 10; x += 4) {
                 for (y = 0; y < 10; y += 4) {
                     life.live(x, y);

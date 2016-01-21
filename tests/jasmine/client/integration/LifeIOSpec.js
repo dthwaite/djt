@@ -19,6 +19,7 @@ describe("LifeIO tests", function() {
     });
 
     describe("ServerIO implementation",function() {
+        var iteration=0;
 
         it("should create a new life with an id",function(done) {
             function idChange(id) {
@@ -45,7 +46,7 @@ describe("LifeIO tests", function() {
             io.apply(lp.getPattern("glider_1",10,10));
             Meteor.setTimeout(function() {
                 io.stop();
-                var iteration=io.iteration;
+                iteration=io.iteration;
                 Meteor.setTimeout(function() {
                     expect(io.iteration).toEqual(iteration);
                     done();
@@ -53,8 +54,9 @@ describe("LifeIO tests", function() {
             },1000);
         });
 
+
         it("on recovery of an existing life, it should have the correct dimensions",function(done) {
-            io2=new DJT.classes.ServerIO(nullfunc);
+            io2=new DJT.classes.ServerIO();
             function sizeChange(width,height) {
                 expect(width).toEqual(50);
                 expect(height).toEqual(50);
@@ -63,18 +65,10 @@ describe("LifeIO tests", function() {
             io2.restore(io.id,sizeChange,nullfunc);
         });
 
-        it("on recovery of an existing life, it should have continued to iterate",function(done) {
-            io3=new DJT.classes.ServerIO();
-            var iteration=io.iteration;
-            io3.restore(io.id,nullfunc,function(cells) {
-                if (io3.iteration>iteration) done();
-            });
-        });
-
         it("iteration count for ongoing subscription should be greater than stopped subscription",function(done) {
-            io2.stop();
             Meteor.setTimeout(function() {
-                expect(io.iteration).toBeGreaterThan(io2.iteration);
+                expect(io2.iteration).toBeGreaterThan(iteration);
+                io2.stop();
                 done();
             },1000);
         });

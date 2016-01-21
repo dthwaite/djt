@@ -1,7 +1,7 @@
 {
   "opts": {
     "encoding": "utf8",
-    "destination": "private/docs/",
+    "destination": "public/docs/",
     "recurse": true
   },
   "plugins": [ "plugins/markdown"],

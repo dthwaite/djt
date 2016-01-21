@@ -7,8 +7,6 @@ DJT.classes.ServerLives=(/** @lends DJT.classes */function() {
     // Holds all Lives, keyed by the Life id
     var lives={};
 
-
-
     /**
      * This class can not be instantiated, all methods are static
      *
@@ -17,7 +15,6 @@ DJT.classes.ServerLives=(/** @lends DJT.classes */function() {
      * It is used by the server to manage Life games as instructed from the client
      */
     function ServerLives() {}
-
 
     /**
      * Gets a [PersistedLife]{@link DJT.classes~PersistedLife} instance, creating one if necessary
@@ -51,6 +48,7 @@ DJT.classes.ServerLives=(/** @lends DJT.classes */function() {
      */
     ServerLives.publishChanges=function(id) {
         check(id,String);
+        console.log("Publishing to client: "+this.connection.id);
         var connection=this.connection.id;
         var life=ServerLives.getLife(id);
         life.setSubscription(connection);

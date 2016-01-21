@@ -53,8 +53,7 @@ DJT.classes.LifePatterns=(/** @lends DJT.classes */function() {
     LifePatterns.randomShape=function(x,y) {
         var choices=[];
         for (var shape in shapes) if (shapes[shape].iteration==0) choices.push({shape:shape,type:shapes[shape].type});
-        var choice=choices[Math.floor(Math.random() * choices.length)];
-        var shape = [{key:"block",value:"block"},{key:"x_blinker",value:"blinker"},{key:"glider_1",value:"glider"}][Math.floor(Math.random() * 3)];
+        var choice=Random.choice(choices);
         return {shape: choice.type, cells: LifePatterns.getPattern(choice.shape,x,y)};
     };
 

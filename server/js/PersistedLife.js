@@ -3,14 +3,12 @@
  * @author Dominic Thwaites
  * @see DJT.classes~PersistedLife
  */
+
+// Call in the Life processor as a raw nodeJS file
+Npm.require(process.cwd()+"/../web.browser/app/Life.js");
+
 DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
-
-    // Call in the Life processoe as a raw nodeJS file
-    var webroot=process.env["METEOR_SHELL_DIR"].substr(0,process.env["METEOR_SHELL_DIR"].indexOf(".meteor"))+"public/";
-    Npm.require(webroot+"Life.js");
-
     /**
-     *
      * @param {number} width Life grid width (X coordinate)
      * @param {number} height Life grid height (Y coordinate)
      * @param {string} id The id of the Life game being instantiated
@@ -18,9 +16,10 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
      * @class
      */
     function PersistedLife(width,height,id) {
-        DJT.classes.Life.call(this,width,height);
-        this.subscriptions={};
-        this.serverId=id;
+        DJT.classes.Life.call(this, width, height);
+        this.subscriptions = {};
+        this.serverId = id;
+        this.iteration=0;
     }
 
     // Set up this class to derive from the Life
@@ -45,7 +44,6 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
     PersistedLife.prototype.unsetSubscription=function(id) {
         delete this.subscriptions[id];
         if (_.isEmpty(this.subscriptions)) DJT.mongo.games.update(this.serverId,{$set: {paused: true}});
-        console.log(id+" unsubscribed");
     };
 
     /**
@@ -54,17 +52,14 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
      * @param {LifeIO~LifeCell[]} cells A set of cells that have changed
      */
     PersistedLife.prototype.persist=function(cells) {
-        if (cells.length==0) DJT.mongo.games.update(this.serverId,{$set: {paused: true}});
-        else {
-            DJT.mongo.games.update(this.serverId, {$set: {paused: false}, $inc: {iteration: 1}});
-            var game=DJT.mongo.games.findOne(this.serverId,{fields: {iteration:1}});
-            if (game) {
-                DJT.mongo.changes.insert({
-                    lifeId: this.serverId,
-                    iteration: game.iteration,
-                    cells: cells
-                });
-            }
+        DJT.mongo.games.update(this.serverId,{$set: {paused: cells.length==0,iteration:this.iteration}});
+        if (cells.length>0)  {
+            this.iteration++;
+            DJT.mongo.changes.insert({
+                lifeId: this.serverId,
+                iteration: this.iteration,
+                cells: cells
+            });
         }
     };
 
@@ -85,7 +80,7 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
      * @returns {DJT.classes~PersistedLife~LifeGame[]} A mongoDB collection of changes
      */
     PersistedLife.prototype.allIterations=function() {
-        return DJT.mongo.changes.find({lifeId:this.serverId})
+        return DJT.mongo.changes.find({lifeId:this.serverId},{sort:{iteration:1}});
     };
 
     /**
@@ -125,6 +120,7 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
  * MongoDB document that records one iteration of cell changes in a Life game
  *
  * @typeDef {object} DJT.classes~PersistedLife~ChangeLog
+ * @property {string} _Id Unique id of the change
  * @property {string} lifeId Unique id of the life game
  * @property {number} iteration The iteration number or sequence number for this change set
  * @property {LifeIO~LifeCell[]} cells The set of cell changes
@@ -138,5 +134,5 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
  * @property {number} width The width (X coordinate) of the game
  * @property {number} height The height (Y coordinate) of the game
  * @property {boolean} paused True of the game is currently paused, otherwise false
- * @property {number} iteration The last iteration number that exists for the game (as held in [ChangeLog]{@link DJT.classes~PersistedLife~ChangeLog}
+ * @property {number} iteration The last iteration number that exists for the game (as held in [ChangeLog]{@link DJT.classes~PersistedLife~ChangeLog)}
  */

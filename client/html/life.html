@@ -9,8 +9,25 @@
             <br/><br/>
             This Life game iterates 4 times a second, each requiring a message from the server containing cell changes from one iteration to the next.
             Messaging is achieved with <mark>Meteor</mark>'s reactive infrastructure where cell changes are lodged in <mark>MongoDB</mark> on the server
-            and the client subscribes to a live query of those changes.</p>
+            and the client subscribes to a live query of those changes. You can peruse the <a href="/docs/module-Life.html" target="_blank"> Life module JSDocs</a> or ...</p>
         <button type="button" id="view-architecture-button" class="btn btn-primary btn-xs center-block">View an architectural diagram</button>
+        <p>The server implementation allowed me to briefly explore the Meteor/MongoDB reactive query architecture and performance.
+        I used <a href="https://github.com/arunoda/meteor-up">mup</a> to deploy this site up to AWS. This plugin worked very nicely
+        and set everything up just so on the server, including MongoDB. However, I quickly discovered that my Life game hammered
+        the CPU on the server but not on my local dev machine. How so? The reason was that reactive queries (mongoDB find())
+            are implemented by Meteor in one of two ways. The first, rather brutish way, is to repeatedly requery the database
+            and compare the result set with the previous query and send any changes back to the client. The second is to use MongoDB's
+            oplog to 'listen' for writes and send any of interest back to the client.</p>
+        <p>The oplog method is employed on a development machine off the bat. But in production the oplog is not maintained unless you specifically ask for it.
+            So this needs to be switched on by preparing MongoDB for replication (the oplog being the prime mover for replication).
+            Once all this is done, then transmitting Life changes at the current rate of 4 iterations per second turns out
+            to be surprisingly performant.
+        </p>
+        <p>One other gotcha is that the transport layer does not guarantee order. For many applications this would be a show stopper
+        and even for my Life game this causes problems. So I had to built in a little home-grown order-resetter based on the fact
+        that I knew iteration 'n' must always follow iteration 'n-1'.</p>
+        <p>All the same, I can well imagine that with clustering, sharding and replication one could build a pretty acceptable real time system
+        that dealt with rapidly changing data ... like an equity trading application.</p>
         <div id="disqus" class="seethrough well well-lg">
             <div id="disqus_thread"></div>
         </div>

@@ -1,6 +1,6 @@
 # Welcome to my showcase site
 
-This is the full source code of http://www.dominicthwaites.co.uk which is my "technology playpen"
+This is the full source code of my [technology playpen](http://www.domt.name) web site
 
 The site is implemented with [Meteor](http://www.meteor.com) and hosted on [AWS](https://aws.amazon.com)
 

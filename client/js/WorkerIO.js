@@ -5,17 +5,6 @@
  */
 DJT.classes.WorkerIO=(/** @lends DJT.classes */function() {
 
-    // Simple random string identifier generator
-    function randomString(length) {
-        var chars = "abcdefghijklmnopqrstuvwxyz1234567890";
-
-        var result = "";
-        for (var i = 0; i < length; i++) {
-            result += chars.substr(Math.floor(Math.random() * chars.length), 1);
-        }
-        return result;
-    }
-
     /**
      * creates a new WorkerIO class
      *
@@ -33,7 +22,7 @@ DJT.classes.WorkerIO=(/** @lends DJT.classes */function() {
 
     WorkerIO.prototype.init = function (width, height, cellChanges) {
 
-        this.id = randomString(20);
+        this.id = Random.id(20);
         if (this.idChange) this.idChange(this.id);
         this.worker.postMessage({name: this.id, command: 'init', size: {width: width, height: height}});
         this.load(cellChanges);

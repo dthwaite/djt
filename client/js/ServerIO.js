@@ -7,6 +7,10 @@ DJT.classes.ServerIO=(/** @lends DJT.classes */function() {
     /**
      * creates a new ServerIO class
      *
+     * Note that the stop() method on Meteor's subscription object is not unique to that subscription's id
+     * stop() causes the server to stop sending changes to all other subscriptions with the same name and
+     * parameters.
+     *
      * @classdesc Provides communication between a client [LifeUI]{@link DJT.classes~LifeUI} class and the server
      * @param {DJT.classes~ServerIO~idChangeCallback} idChange Callback for when an id is provided
      * @implements LifeIO
@@ -15,6 +19,7 @@ DJT.classes.ServerIO=(/** @lends DJT.classes */function() {
     var ServerIO=function(idChange) {
         this.idChange=idChange;
         this.iteration=0;
+        this.cached={};
     };
 
     ServerIO.prototype.init=function(width, height, cellChanges) {
@@ -38,15 +43,33 @@ DJT.classes.ServerIO=(/** @lends DJT.classes */function() {
 
     ServerIO.prototype.load=function(cellChanges) {
         var me=this;
-        this.subscription=Meteor.subscribe("lifechange",this.id);
-        DJT.mongo.changes.find({lifeId:this.id}).observeChanges({added:function(id,field) {
-            me.iteration++;
-            cellChanges(field.cells);
+        this.subscription=Meteor.subscribe("lifechange",this.id,{onStop:function() {
+            console.log(me.id+" Stopped");
+        }});
+        console.log(this.id+" Started");
+        DJT.mongo.changes.find({lifeId:this.id},{sort:{iteration:1}}).observeChanges({added:function(id,field) {
+            if (me.iteration+1==field.iteration) {
+                me.iteration++;
+                console.log(me.subscription.subscriptionId + " Change: " + me.iteration + ", cells: " + field.cells.length);
+                cellChanges(field.cells);
+                while (me.cached[me.iteration+1]) {
+                    me.iteration++;
+                    console.log(me.subscription.subscriptionId + " Change: " + me.iteration + ", cells: " + me.cached[me.iteration].length);
+                    cellChanges(me.cached[me.iteration]);
+                }
+            } else {
+                if (field.iteration>me.iteration+1) {
+                    console.log(me.subscription.subscriptionId + " Cacheing out of order change: " + field.iteration);
+                    me.cached[field.iteration]=field.cells;
+                }
+            }
         }});
     };
 
     ServerIO.prototype.stop=function() {
-        if (this.subscription) this.subscription.stop();
+        if (this.subscription) {
+            this.subscription.stop();
+        }
     };
 
     ServerIO.prototype.resize=function(width, height) {
