@@ -1,0 +1,27 @@
+<template name="simulation">
+    <div class="container">
+        <h3>Highway Simulation</h3>
+        <canvas id="simulation_canvas"></canvas>
+
+        <div id="disqus" class="seethrough well well-lg">
+            <div id="disqus_thread"></div>
+        </div>
+
+        <div class="overlay">
+            <div class="row col-xs-offset-1 col-xs-10">
+                <div class="panel panel-success">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <h4 class="col-xs-11">Architectural diagram</h4>
+                            <button id="quit-overlay" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <img src="images/Life.svg" onerror="this.src='Life.jpg'"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
