@@ -10,11 +10,4 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectPlainTextFileTypeManager">
-    <file url="file://$PROJECT_DIR$/private/docs/client_js_Bouncer.js.html" />
-    <file url="file://$PROJECT_DIR$/private/docs/client_js_LifeInterface.js.html" />
-    <file url="file://$PROJECT_DIR$/private/docs/client_js_LifeUI.js.html" />
-    <file url="file://$PROJECT_DIR$/private/docs/client_js_ServerIO.js.html" />
-    <file url="file://$PROJECT_DIR$/private/docs/client_js_WorkerIO.js.html" />
-  </component>
 </project>

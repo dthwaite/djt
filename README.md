@@ -1,4 +1,4 @@
-# Welcome to my showcase site
+# Welcome to my personal showcase site
 
 This is the full source code of my [technology playpen](http://www.domt.name) web site
 

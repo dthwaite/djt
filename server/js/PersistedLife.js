@@ -99,7 +99,7 @@ DJT.classes.PersistedLife=(/** @lends DJT.classes */function() {
      * @returns {DJT.classes~PersistedLife~LifeGame[]} A MongoDB collection of games that are not paused
      */
     PersistedLife.getRunningGames=function() {
-        return DJT.mongo.games.find({paused:false});
+        return DJT.mongo.games.find({paused:false,iteration:{$lt:10000}});
     };
 
     /**

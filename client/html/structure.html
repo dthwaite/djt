@@ -1,0 +1,67 @@
+<template name="structure">
+    <div class="jumbotron">
+        <h1>Structure</h1>
+        <p>I find beauty in structure</p>
+        <p>Examples include</p>
+        <ul class="biglist">
+            <li>Music</li>
+            <li>Chess</li>
+            <li>Mathematics</li>
+        </ul>
+
+    </div>
+    <div class="well well-lg">
+        <h3>Opinion</h3>
+        <p>It may seem odd to group the above three in the same topic, but for me their common
+        denominator is structure. It's one of the reasons I like programming because you get to build cohesive, hierarchical
+        structures of working bits that interact with each other to achieve a common goal.</p>
+        <h3>Music</h3>
+        <p>The kind of music I enjoy listening to is well structured. I like the complicated harmonies and patterns that evolve
+        as the music unfolds. The emotional experience of beauty that I can get when listening to music is directly attributable
+        to the experience of "feeling" the structure as a unified whole. It is almost the same feeling when playing a particularly
+        successful chess game or experiencing the beauty of a mathematical construct that encapsulates some physical process.</p>
+        <p>I find it difficult to listen to music in the background. I'd rather not have it there. If there's (real) music playing
+        then I want to pay attention to it. I have a pretty good grasp of music as I had a particularly musical upbringing being
+        a chorister and Winchester Cathedral for 5 years. So I've grown to love a lot of church music. Bach is, of course, the big
+        Daddy of them all (especially when it comes to structure) and I also like music of the romantic era. I very much like Schumann whose
+        life story is as sad and beautiful as some of his music. I am a very poor piano player but I doggedly learn and play a few pieces (especially Schumann)
+        and, despite my ineptitude, love to play these pieces. However there's a lot of classical music I find rather boring. So I also like
+        modern music. Well, almost modern. Queen, Pink Floyd, Dire straits, Elton John, Abba etc. Abba's structure and harmonies are world class.
+        I don't like jazz. Which is a shame as it appears many people get a lot out of jazz. Perhaps it is because jazz is relatively unstructured.</p>
+        <h3>Chess</h3>
+        <p>I've played a fair amount of amateur chess in my time. Like most of my leisure pursuits I'm not a serious player and am well below club standards
+        but I can still play decently. Chess is an extraordinary game because it contains no random elements and has very few rules. Yet from simple beginnings a new, fresh, different
+        game emerges every time you play. It's uncanny. At my level, getting through a complete game without any obvious blunders is an achievement in itself and when that happens
+        it's a "good" game. It's an even better game if you win as a result of a slow and steady positional build up until the time eventually comes when your opponent
+        has simply run out of options. You have to play chess intuitively. Most of the time you are simply making judgement decisions on whether a piece is better positioned
+        here or over there. You do have to check the result of tactical sequences but you win by playing strategically.</p>
+        <p>Ever since I was at university I wanted to write a chess program. But I never did and these days it's all been thoroughly done. Chess programs are generally
+        pretty straight forward tree search algorithms with lots of short cuts and tricks. Computers are now fast enough to allow these programs to plough through
+        vast numbers of combinations out of which emerges the ability to play world class chess. Out of which also emerges the illusion of strategic and "intelligent" play.
+        Which, incidentally, is not dissimilar to our brains whose parallel computation power is such that "intelligence" and self awareness emerges.</p>
+        <p>I did actually start writing a chess program a few years ago. But the reason was because I wanted to do so in a certain way. Instead of writing software I
+        built an electronic logical circuit. Not a physical circuit, but one which I built with software! In other words, I wrote (in <mark>Java</mark>) a set of classes that
+        simulated primitive logic gates and their connections (ANDs, ORs, XORs and NOTs) and then put those together to form more complex circuits (like any computer chip).
+        I had flip-flops to store a binary bit, a chain of flip-flops to store many binary bits. I had adders and accummulators and all sorts of components.
+            Every gate had a latency time of when a signal emerged at the output as a result of a signal arriving at the input.
+            I then designed a big, complicated piece of circuitry that modelled a chess position.
+            The circuitry  had various "sensors" that accumulated a total score for any position - a kind of static evaluation of the board.
+            A clock signal would then trigger the circuitry to make the next valid move (for whoever's turn it was) storing the resultant score of that move
+            (i.e. the static board position). I got as far as statically evaluating the score of each possible move and finding the best one. I think I lost
+        a little interest when I discovered that my circuit, if built for real, would only have been about one order of magnitude faster than a traditional software
+        program. And having a chess computer which is only 10 times faster than the next is not going to make that much difference. It was fun, though.</p>
+        <h3>Mathematics</h3>
+        <p>I'm only A level standard, but I would love to be more advanced at mathematics. When I do my Physics degree that time will come. Maths
+        is a true wonder of human discovery. It is a way in which we can express and model the workings of the world using symbols. We've built up
+        rules as to how we can manipulate those symbols which allow us to predict how things might work and what things might happen. The sensational
+        part of all this is that these manipulations can reveal new insights about the world which, when we go look for the evidence, turn out to be true.
+        In other words, we can use maths to discover hidden truths about the world. It's almost too good to be true.</p>
+        <p>And there's no where more wonderful to show the efficy of Mathematics in the realm of Quantum Mechanics.
+            Where the Maths <strong>actually is</strong> the reality. The mathematics of Quantum Mechanics describes a system which cannot really be physical
+             - at least not as we understand the term. But physical reality emerges as a result and it emerges in exactly the way in which the maths predicts. It's quite rude, really.
+        </p>
+    </div>
+    <div id="disqus" class="seethrough well well-lg">
+        <div id="disqus_thread"></div>
+    </div>
+</template>

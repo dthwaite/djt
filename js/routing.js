@@ -58,6 +58,10 @@ Router.route('/diet', function () {
     this.render('diet');
 },routing);
 
+Router.route('/structure', function () {
+    this.render('structure');
+},routing);
+
 Router.route('/life', function (params) {
     this.layout(''); // Suppress the default layout
     this.render('serverlife',{
@@ -67,4 +71,8 @@ Router.route('/life', function (params) {
     });
 },routing);
 
+Router.route('/simulation', function (params) {
+    this.layout(''); // Suppress the default layout
+    this.render('simulation');
+},routing);
 
